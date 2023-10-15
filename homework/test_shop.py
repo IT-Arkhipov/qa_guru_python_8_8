@@ -19,6 +19,16 @@ class TestProducts:
 
     def test_product_check_quantity(self, product):
         # TODO напишите проверки на метод check_quantity
+
+        checked_quantity = product.quantity
+        assert product.check_quantity(checked_quantity), \
+            f"It is not enough {checked_quantity} products of total {product.quantity}"
+        checked_quantity = product.quantity - 1
+        assert product.check_quantity(checked_quantity), \
+            f"It is not enough {checked_quantity} products of total {product.quantity}"
+        checked_quantity = product.quantity + 1
+        assert not product.check_quantity(checked_quantity), \
+            f"There is no {checked_quantity} products then total {product.quantity}"
         pass
 
     def test_product_buy(self, product):
