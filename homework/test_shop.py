@@ -10,6 +10,7 @@ from homework.models import Product, Cart
 def product():
     return Product("book", 100, "This is a book", 1000)
 
+
 @pytest.fixture
 def two_products():
     return (Product("book", 45.8, "This is a book", 86),
@@ -29,7 +30,7 @@ class TestProducts:
 
     def test_product_check_quantity(self, product):
         # TODO напишите проверки на метод check_quantity
-
+        # Проверка граничных значений количества товара
         tested_quantity = product.quantity
         assert product.check_quantity(tested_quantity), \
             f"It is not enough {tested_quantity} products of total {product.quantity}"
@@ -166,7 +167,7 @@ class TestCart:
         assert cart.products == {}, "The cleared cart is not empty"
 
     def test_total_price(self, cart, two_products):
-        # Добавляем 2 продукта в корзину, затем очищаем всю корзину
+        # Добавляем 2 продукта в корзину, затем получаем стоимость корзины
         product1, product2 = two_products
 
         quantity1 = 31
@@ -175,5 +176,58 @@ class TestCart:
         cart.add_product(product=product2, buy_count=quantity2)
 
         total_price = product1.price * quantity1 + product2.price * quantity2
-        assert total_price == cart.get_total_price()
+        cart_total_price = cart.get_total_price()
+        assert cart_total_price == total_price, (f"The cart total price {cart_total_price} "
+                                                 f"doesn't equal products total price {total_price}")
 
+    def test_buy(self, product, cart):
+        # Добавляем товара в корзину меньше, чем количество на складе, с учетом предыдущего количества в корзине
+        prod_quant = product.quantity
+        prev_quant = cart.products.get(product, 0)
+        added_quant = (prod_quant - prev_quant) // 2
+        cart.add_product(product=product, buy_count=added_quant)
+        try:
+            cart.buy()
+        except ValueError:
+            raise AssertionError(f"An attempt to buy {added_quant + prev_quant} than {prod_quant} product(s)")
+        else:
+            assert product.quantity == prod_quant - added_quant - prev_quant, f"Not all product was bought"
+
+    def test_buy_less_than(self, product, cart):
+        # Добавляем товара в корзину на 1 товар меньше, чем на складе, с учетом предыдущего количества в корзине
+        prod_quant = product.quantity
+        prev_quant = cart.products.get(product, 0)
+        added_quant = prod_quant - prev_quant - 1
+        cart.add_product(product=product, buy_count=added_quant)
+        try:
+            cart.buy()
+        except ValueError:
+            raise AssertionError(f"An attempt to buy {added_quant + prev_quant} than {prod_quant} product(s)")
+        else:
+            assert product.quantity == 1, f"There are left {product.quantity} - more than 1 product"
+
+    def test_buy_all(self, product, cart):
+        # Добавляем товара весь товар, с учетом предыдущего количества в корзине
+        # Проверяем, что весь товар был выкуплен
+        prod_quant = product.quantity
+        prev_quant = cart.products.get(product, 0)
+        added_quant = prod_quant - prev_quant
+        cart.add_product(product=product, buy_count=added_quant)
+        try:
+            cart.buy()
+        except ValueError:
+            raise AssertionError(f"An attempt to buy {added_quant + prev_quant} than {prod_quant} product(s)")
+        else:
+            assert product.quantity == 0, f"Not all product was bought"
+
+    def test_buy_more_than(self, product, cart):
+        prod_quant = product.quantity
+        prev_quant = cart.products.get(product, 0)
+        added_quant = (prod_quant - prev_quant) + 1
+        cart.add_product(product=product, buy_count=added_quant)
+        try:
+            cart.buy()
+        except ValueError:
+            assert True
+        else:
+            raise AssertionError(f"An attempt to buy {added_quant + prev_quant} than {prod_quant} product(s)")

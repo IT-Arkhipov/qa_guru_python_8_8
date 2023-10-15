@@ -1,3 +1,6 @@
+import pytest
+
+
 class Product:
     """
     Класс продукта
@@ -85,4 +88,11 @@ class Cart:
         Учтите, что товаров может не хватать на складе.
         В этом случае нужно выбросить исключение ValueError
         """
-        raise NotImplementedError
+        for product in self.products:
+            try:
+                product.buy(quantity=self.products.get(product, 0))
+            except ValueError:
+                raise ValueError
+        # Если весь товар успешно выкупили, то очищаем корзину
+        self.clear()
+
