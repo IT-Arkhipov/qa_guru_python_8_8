@@ -20,25 +20,42 @@ class TestProducts:
     def test_product_check_quantity(self, product):
         # TODO напишите проверки на метод check_quantity
 
-        checked_quantity = product.quantity
-        assert product.check_quantity(checked_quantity), \
-            f"It is not enough {checked_quantity} products of total {product.quantity}"
-        checked_quantity = product.quantity - 1
-        assert product.check_quantity(checked_quantity), \
-            f"It is not enough {checked_quantity} products of total {product.quantity}"
-        checked_quantity = product.quantity + 1
-        assert not product.check_quantity(checked_quantity), \
-            f"There is no {checked_quantity} products then total {product.quantity}"
+        tested_quantity = product.quantity
+        assert product.check_quantity(tested_quantity), \
+            f"It is not enough {tested_quantity} products of total {product.quantity}"
+        tested_quantity = product.quantity - 1
+        assert product.check_quantity(tested_quantity), \
+            f"It is not enough {tested_quantity} products of total {product.quantity}"
+        tested_quantity = product.quantity + 1
+        assert not product.check_quantity(tested_quantity), \
+            f"There is no {tested_quantity} products then total {product.quantity}"
         pass
 
     def test_product_buy(self, product):
         # TODO напишите проверки на метод buy
-        pass
+        tested_quantity = product.quantity - 1
+        try:
+            product.buy(tested_quantity)
+        except ValueError:
+            raise AssertionError(f"You couldn't buy {tested_quantity} products of total {product.quantity}")
+
+    def test_product_buy_all(self, product):
+        # TODO напишите проверки на метод buy
+        tested_quantity = product.quantity
+        try:
+            product.buy(tested_quantity)
+        except ValueError:
+            raise AssertionError(f"You couldn't buy {tested_quantity} products of total {product.quantity}")
 
     def test_product_buy_more_than_available(self, product):
         # TODO напишите проверки на метод buy,
         #  которые ожидают ошибку ValueError при попытке купить больше, чем есть в наличии
-        pass
+        tested_quantity = product.quantity + 1
+        try:
+            product.buy(tested_quantity)
+            raise AssertionError(f"You couldn't buy {tested_quantity} products of total {product.quantity}")
+        except ValueError:
+            assert True
 
 
 class TestCart:
