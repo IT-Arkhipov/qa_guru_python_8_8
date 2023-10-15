@@ -63,10 +63,15 @@ class Cart:
         Если remove_count не передан, то удаляется вся позиция
         Если remove_count больше, чем количество продуктов в позиции, то удаляется вся позиция
         """
-        raise NotImplementedError
+        if remove_count < 0:
+            return
+        if remove_count is None or remove_count >= self.products.get(product, 0):
+            self.products.pop(product, None)
+        else:
+            self.products[product] = self.products.get(product) - remove_count
 
     def clear(self):
-        raise NotImplementedError
+        self.products.clear()
 
     def get_total_price(self) -> float:
         raise NotImplementedError
