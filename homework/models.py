@@ -53,7 +53,9 @@ class Cart:
         Метод добавления продукта в корзину.
         Если продукт уже есть в корзине, то увеличиваем количество
         """
-        self.products[product] += buy_count
+        if buy_count <= 0:
+            return
+        self.products[product] = self.products.get(product, 0) + buy_count
 
     def remove_product(self, product: Product, remove_count=None):
         """
