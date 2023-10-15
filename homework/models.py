@@ -74,7 +74,10 @@ class Cart:
         self.products.clear()
 
     def get_total_price(self) -> float:
-        raise NotImplementedError
+        total_price = 0
+        for product in self.products:
+            total_price += self.products.get(product, 0) * product.price
+        return total_price
 
     def buy(self):
         """

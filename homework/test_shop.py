@@ -10,6 +10,11 @@ from homework.models import Product, Cart
 def product():
     return Product("book", 100, "This is a book", 1000)
 
+@pytest.fixture
+def two_products():
+    return (Product("book", 45.8, "This is a book", 86),
+            Product("pen", 9.23, "This is a pen", 32))
+
 
 @pytest.fixture
 def cart():
@@ -148,14 +153,27 @@ class TestCart:
         left_quant = cart.products.get(product, 0)
         assert prev_quant + added_quant == left_quant, "No products supposed to be removed from the cart"
 
-    def test_clear_cart(self, cart):
-        # Добавляем продукты в корзину, затем очищаем всю корзину
-        product1 = Product("book", 100, "This is a book", 86)
-        product2 = Product("pen", 10, "This is a pen", 32)
+    def test_clear_cart(self, cart, two_products):
+        # Добавляем 2 продукта в корзину, затем очищаем всю корзину
+        product1, product2 = two_products
 
-        cart.add_product(product=product1, buy_count=16)
-        cart.add_product(product=product2, buy_count=25)
+        quantity1 = 16
+        quantity2 = 25
+        cart.add_product(product=product1, buy_count=quantity1)
+        cart.add_product(product=product2, buy_count=quantity2)
 
         cart.clear()
         assert cart.products == {}, "The cleared cart is not empty"
+
+    def test_total_price(self, cart, two_products):
+        # Добавляем 2 продукта в корзину, затем очищаем всю корзину
+        product1, product2 = two_products
+
+        quantity1 = 31
+        quantity2 = 17
+        cart.add_product(product=product1, buy_count=quantity1)
+        cart.add_product(product=product2, buy_count=quantity2)
+
+        total_price = product1.price * quantity1 + product2.price * quantity2
+        assert total_price == cart.get_total_price()
 
