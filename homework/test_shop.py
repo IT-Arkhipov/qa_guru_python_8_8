@@ -44,6 +44,7 @@ class TestProducts:
 
     def test_product_buy(self, product):
         # TODO напишите проверки на метод buy
+        # граничное значение - 1
         tested_quantity = product.quantity - 1
         try:
             product.buy(tested_quantity)
@@ -52,6 +53,7 @@ class TestProducts:
 
     def test_product_buy_all(self, product):
         # TODO напишите проверки на метод buy
+        # граничное значение
         tested_quantity = product.quantity
         try:
             product.buy(tested_quantity)
@@ -61,6 +63,7 @@ class TestProducts:
     def test_product_buy_more_than_available(self, product):
         # TODO напишите проверки на метод buy,
         #  которые ожидают ошибку ValueError при попытке купить больше, чем есть в наличии
+        # граничное значение + 1
         tested_quantity = product.quantity + 1
         with pytest.raises(ValueError):
             product.buy(tested_quantity)
