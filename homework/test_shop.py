@@ -148,3 +148,14 @@ class TestCart:
         left_quant = cart.products.get(product, 0)
         assert prev_quant + added_quant == left_quant, "No products supposed to be removed from the cart"
 
+    def test_clear_cart(self, cart):
+        # Добавляем продукты в корзину, затем очищаем всю корзину
+        product1 = Product("book", 100, "This is a book", 86)
+        product2 = Product("pen", 10, "This is a pen", 32)
+
+        cart.add_product(product=product1, buy_count=16)
+        cart.add_product(product=product2, buy_count=25)
+
+        cart.clear()
+        assert cart.products == {}, "The cleared cart is not empty"
+
